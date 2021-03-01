@@ -261,6 +261,9 @@ class PDFStream(PDFObject):
             self.rawdata = None
             return
         for (f, params) in filters:
+            if isinstance(params, PDFObjRef):
+                params = params.resolve()
+
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.
                 try:
@@ -294,8 +297,6 @@ class PDFStream(PDFObject):
             else:
                 raise PDFNotImplementedError('Unsupported filter: %r' % f)
             # apply predictors
-            if isinstance(params, PDFObjRef):
-                params = params.resolve()
             if params and 'Predictor' in params:
                 pred = int_value(params['Predictor'])
                 if pred == 1:
